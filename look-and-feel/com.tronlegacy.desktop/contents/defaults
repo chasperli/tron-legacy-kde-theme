@@ -1,0 +1,14 @@
+[kdeglobals]
+ColorScheme=TronLegacy
+
+[plasmarc]
+Theme=TronLegacy
+
+[kwinrc]
+theme=__aurorae__svg__TronLegacy
+
+[ksplashrc]
+Theme=com.tronlegacy.desktop
+
+[kscreenlockerrc]
+Theme=com.tronlegacy.desktop

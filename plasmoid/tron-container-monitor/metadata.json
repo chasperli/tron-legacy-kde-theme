@@ -1,0 +1,16 @@
+{
+    "KPlugin": {
+        "Authors": [{"Email": "lukas.mathis@ikmail.ch", "Name": "Lukas"}],
+        "Category": "System Information",
+        "Description": "Monitors CPU, RAM of Podman containers and Distroboxes.",
+        "Icon": "utilities-system-monitor",
+        "Id": "com.tronlegacy.containermonitor",
+        "License": "GPL-2.0-or-later",
+        "Name": "Tron Container Monitor",
+        "Version": "0.1.0"
+    },
+    "KPackageStructure": "Plasma/Applet",
+    "X-Plasma-API-Minimum-Version": "6.0",
+    "X-Plasma-API": "declarativeappletscript",
+    "X-Plasma-MainScript": "ui/main.qml"
+}

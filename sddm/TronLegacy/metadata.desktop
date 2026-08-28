@@ -1,0 +1,9 @@
+[SddmGreeterTheme]
+Name=Tron Legacy
+Description=Dark cyberpunk SDDM login theme inspired by Tron Legacy.
+Author=Lukas
+Email=lukas.mathis@ikmail.ch
+License=GPL-2.0-or-later
+Type=sddm-theme
+Version=0.1.0
+ConfigFile=theme.conf

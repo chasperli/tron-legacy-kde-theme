@@ -1,0 +1,10 @@
+[Unit]
+Description=Tron Container Monitor — update every minute
+
+[Timer]
+OnBootSec=10s
+OnUnitActiveSec=60s
+Unit=tron-containers.service
+
+[Install]
+WantedBy=timers.target

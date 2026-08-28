@@ -1,0 +1,6 @@
+[Unit]
+Description=Tron Container Monitor — fetch podman stats
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/share/plasma/plasmoids/com.tronlegacy.containermonitor/contents/code/fetch.sh

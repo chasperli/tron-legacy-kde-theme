@@ -1,0 +1,19 @@
+{
+    "KPlugin": {
+        "Authors": [
+            {
+                "Email": "lukas.mathis@ikmail.ch",
+                "Name": "Lukas"
+            }
+        ],
+        "Description": "Tron Legacy Global Theme",
+        "Id": "com.tronlegacy.desktop",
+        "License": "GPL-2.0-or-later",
+        "Name": "Tron Legacy",
+        "ServiceTypes": [
+            "Plasma/LookAndFeel"
+        ],
+        "Version": "0.1.0"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

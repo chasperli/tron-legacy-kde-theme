@@ -1,0 +1,42 @@
+[
+  {
+    "id": "a1b2c3d4e5f6",
+    "name": "fedora-toolbox",
+    "cpu_percent": "12.50%",
+    "mem_usage": "245MB / 4GB",
+    "mem_percent": "6.10%",
+    "net_io": "1.2MB / 800KB",
+    "pids": "42",
+    "cpu_time": "00:05:23"
+  },
+  {
+    "id": "b2c3d4e5f6g7",
+    "name": "nginx-proxy",
+    "cpu_percent": "0.00%",
+    "mem_usage": "18MB / 512MB",
+    "mem_percent": "3.50%",
+    "net_io": "0B / 0B",
+    "pids": "5",
+    "cpu_time": "00:00:12"
+  },
+  {
+    "id": "c3d4e5f6g7h8",
+    "name": "dev-postgres",
+    "cpu_percent": "45.20%",
+    "mem_usage": "890MB / 2GB",
+    "mem_percent": "43.50%",
+    "net_io": "45MB / 12MB",
+    "pids": "28",
+    "cpu_time": "02:15:00"
+  },
+  {
+    "id": "d4e5f6g7h8i9",
+    "name": "redis-cache",
+    "cpu_percent": "2.10%",
+    "mem_usage": "64MB / 256MB",
+    "mem_percent": "25.00%",
+    "net_io": "3.4MB / 2.1MB",
+    "pids": "7",
+    "cpu_time": "00:45:00"
+  }
+]

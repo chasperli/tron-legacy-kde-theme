@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="22" height="176" viewBox="0 0 22 176">
+  <defs>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="2.5" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="glow2" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="4" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="glow-soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="1.5" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <circle id="active" cx="11" cy="11" r="9" fill="none" stroke="none" opacity="0"/>
+  <line x1="6" y1="7" x2="16" y2="7" stroke="#00F5FF" stroke-width="1.5" stroke-linecap="round" opacity="0.9" filter="url(#glow)"/>
+  <line x1="6" y1="11" x2="16" y2="11" stroke="#00F5FF" stroke-width="1.5" stroke-linecap="round" opacity="0.9" filter="url(#glow)"/>
+  <line x1="6" y1="15" x2="16" y2="15" stroke="#00F5FF" stroke-width="1.5" stroke-linecap="round" opacity="0.9" filter="url(#glow)"/>
+  <circle cx="11" cy="33" r="9" fill="#004050" fill-opacity="0.35"/>
+  <circle id="hover" cx="11" cy="33" r="9" fill="none" stroke="#00F5FF" stroke-width="1.5" opacity="0.85" filter="url(#glow2)"/>
+  <line x1="6" y1="29" x2="16" y2="29" stroke="#00F5FF" stroke-width="1.5" stroke-linecap="round" opacity="1.0" filter="url(#glow2)"/>
+  <line x1="6" y1="33" x2="16" y2="33" stroke="#00F5FF" stroke-width="1.5" stroke-linecap="round" opacity="1.0" filter="url(#glow2)"/>
+  <line x1="6" y1="37" x2="16" y2="37" stroke="#00F5FF" stroke-width="1.5" stroke-linecap="round" opacity="1.0" filter="url(#glow2)"/>
+  <circle cx="11" cy="55" r="9" fill="#00F5FF" fill-opacity="0.2"/>
+  <circle id="pressed" cx="11" cy="55" r="9" fill="none" stroke="#00F5FF" stroke-width="1.5" opacity="1.0" filter="url(#glow2)"/>
+  <line x1="6" y1="51" x2="16" y2="51" stroke="#00F5FF" stroke-width="1.5" stroke-linecap="round" opacity="1.0" filter="url(#glow2)"/>
+  <line x1="6" y1="55" x2="16" y2="55" stroke="#00F5FF" stroke-width="1.5" stroke-linecap="round" opacity="1.0" filter="url(#glow2)"/>
+  <line x1="6" y1="59" x2="16" y2="59" stroke="#00F5FF" stroke-width="1.5" stroke-linecap="round" opacity="1.0" filter="url(#glow2)"/>
+  <circle id="deactivated" cx="11" cy="77" r="9" fill="none" stroke="none" opacity="0"/>
+  <line x1="6" y1="73" x2="16" y2="73" stroke="#004050" stroke-width="1.5" stroke-linecap="round" opacity="0.25" filter="url(#glow-soft)"/>
+  <line x1="6" y1="77" x2="16" y2="77" stroke="#004050" stroke-width="1.5" stroke-linecap="round" opacity="0.25" filter="url(#glow-soft)"/>
+  <line x1="6" y1="81" x2="16" y2="81" stroke="#004050" stroke-width="1.5" stroke-linecap="round" opacity="0.25" filter="url(#glow-soft)"/>
+  <circle id="inactive" cx="11" cy="99" r="9" fill="none" stroke="none" opacity="0"/>
+  <line x1="6" y1="95" x2="16" y2="95" stroke="#004050" stroke-width="1.5" stroke-linecap="round" opacity="0.4" filter="url(#glow-soft)"/>
+  <line x1="6" y1="99" x2="16" y2="99" stroke="#004050" stroke-width="1.5" stroke-linecap="round" opacity="0.4" filter="url(#glow-soft)"/>
+  <line x1="6" y1="103" x2="16" y2="103" stroke="#004050" stroke-width="1.5" stroke-linecap="round" opacity="0.4" filter="url(#glow-soft)"/>
+  <circle cx="11" cy="121" r="9" fill="#004050" fill-opacity="0.2"/>
+  <circle id="inactive-hover" cx="11" cy="121" r="9" fill="none" stroke="#004050" stroke-width="1.5" opacity="0.55" filter="url(#glow-soft)"/>
+  <line x1="6" y1="117" x2="16" y2="117" stroke="#0096A8" stroke-width="1.5" stroke-linecap="round" opacity="0.7" filter="url(#glow-soft)"/>
+  <line x1="6" y1="121" x2="16" y2="121" stroke="#0096A8" stroke-width="1.5" stroke-linecap="round" opacity="0.7" filter="url(#glow-soft)"/>
+  <line x1="6" y1="125" x2="16" y2="125" stroke="#0096A8" stroke-width="1.5" stroke-linecap="round" opacity="0.7" filter="url(#glow-soft)"/>
+  <circle cx="11" cy="143" r="9" fill="#004050" fill-opacity="0.3"/>
+  <circle id="inactive-pressed" cx="11" cy="143" r="9" fill="none" stroke="#0096A8" stroke-width="1.5" opacity="0.7" filter="url(#glow)"/>
+  <line x1="6" y1="139" x2="16" y2="139" stroke="#0096A8" stroke-width="1.5" stroke-linecap="round" opacity="0.85" filter="url(#glow)"/>
+  <line x1="6" y1="143" x2="16" y2="143" stroke="#0096A8" stroke-width="1.5" stroke-linecap="round" opacity="0.85" filter="url(#glow)"/>
+  <line x1="6" y1="147" x2="16" y2="147" stroke="#0096A8" stroke-width="1.5" stroke-linecap="round" opacity="0.85" filter="url(#glow)"/>
+  <circle id="inactive-deactivated" cx="11" cy="165" r="9" fill="none" stroke="none" opacity="0"/>
+  <line x1="6" y1="161" x2="16" y2="161" stroke="#004050" stroke-width="1.5" stroke-linecap="round" opacity="0.15" filter="url(#glow-soft)"/>
+  <line x1="6" y1="165" x2="16" y2="165" stroke="#004050" stroke-width="1.5" stroke-linecap="round" opacity="0.15" filter="url(#glow-soft)"/>
+  <line x1="6" y1="169" x2="16" y2="169" stroke="#004050" stroke-width="1.5" stroke-linecap="round" opacity="0.15" filter="url(#glow-soft)"/>
+</svg>

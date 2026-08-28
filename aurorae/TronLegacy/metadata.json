@@ -1,0 +1,18 @@
+{
+    "KPlugin": {
+        "Authors": [
+            {
+                "Email": "lukas.mathis@ikmail.ch",
+                "Name": "Lukas"
+            }
+        ],
+        "Description": "Aurorae window decoration for Tron Legacy",
+        "Id": "TronLegacy",
+        "License": "GPL-2.0-or-later",
+        "Name": "Tron Legacy",
+        "ServiceTypes": [
+            "KWin/Decoration"
+        ],
+        "Version": "0.1.0"
+    }
+}

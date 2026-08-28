@@ -1,0 +1,16 @@
+# Generated / transient assets
+# These are produced by install.sh from SVG sources
+wallpaper/TronLegacy/contents/images/*.png
+sddm/TronLegacy/tron-legacy-wallpaper.png
+
+# OS / editor debris
+.DS_Store
+*~
+*.swp
+*.swo
+.vscode/
+.idea/
+
+# Build artifacts (if any)
+*.tar.gz
+*.zip

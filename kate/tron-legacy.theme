@@ -1,0 +1,37 @@
+{
+    "metadata": { "name": "Tron Legacy", "revision": 1 },
+    "editor-colors": {
+        "BackgroundColor": "#050A0E",
+        "CurrentLine": "#080E16",
+        "CurrentLineNumber": "#00B4CC",
+        "IconBorder": "#06090E",
+        "LineNumbers": "#304858",
+        "SearchHighlight": "#003040",
+        "TextSelection": "#003848",
+        "WordWrapMarker": "#0D1B2A"
+    },
+    "text-styles": {
+        "Normal":       { "text-color": "#D0E8F0", "selected-text-color": "#FFFFFF" },
+        "Keyword":      { "text-color": "#00F5FF" },
+        "Function":     { "text-color": "#C8E6F0" },
+        "Variable":     { "text-color": "#D0E8F0" },
+        "ControlFlow":  { "text-color": "#00F5FF" },
+        "Operator":     { "text-color": "#0096A8" },
+        "BuiltIn":      { "text-color": "#00BFFF" },
+        "Preprocessor": { "text-color": "#FF9500" },
+        "Attribute":    { "text-color": "#FFB340" },
+        "String":       { "text-color": "#00E5CC" },
+        "SpecialChar":  { "text-color": "#00C8B4" },
+        "Import":       { "text-color": "#FF9500" },
+        "DataType":     { "text-color": "#00BFFF" },
+        "DecVal":       { "text-color": "#FF9500" },
+        "Float":        { "text-color": "#FF9500" },
+        "Constant":     { "text-color": "#FFB340" },
+        "Comment":      { "text-color": "#507080", "italic": true },
+        "Documentation":{ "text-color": "#406070", "italic": true },
+        "Alert":        { "text-color": "#FF3030", "bold": true },
+        "Error":        { "text-color": "#FF3030", "underline": true },
+        "Warning":      { "text-color": "#FF9500" },
+        "Others":       { "text-color": "#C8E6F0" }
+    }
+}

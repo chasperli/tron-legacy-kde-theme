@@ -1,0 +1,17 @@
+[General]
+ActiveTextColor=00D4E8
+InactiveTextColor=507080
+
+[Layout]
+BorderLeft=4
+BorderRight=4
+BorderBottom=4
+TitleEdgeTop=0
+TitleEdgeBottom=0
+TitleEdgeLeft=6
+TitleEdgeRight=6
+TitleHeight=30
+ButtonWidth=22
+ButtonHeight=22
+ButtonSpacing=4
+ButtonMarginTop=4
