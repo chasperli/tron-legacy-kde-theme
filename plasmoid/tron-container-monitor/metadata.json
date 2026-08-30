@@ -7,7 +7,7 @@
         "Id": "com.tronlegacy.containermonitor",
         "License": "GPL-2.0-or-later",
         "Name": "Tron Container Monitor",
-        "Version": "0.1.0"
+        "Version": "0.1.2"
     },
     "KPackageStructure": "Plasma/Applet",
     "X-Plasma-API-Minimum-Version": "6.0",

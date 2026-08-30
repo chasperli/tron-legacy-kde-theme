@@ -3,15 +3,22 @@ import QtQuick.Layouts 1.15
 
 Item {
     id: root
-    readonly property color colBg:      "#050A0E"
-    readonly property color colPanel:   "#0A141E"
-    readonly property color colCyan:    "#00F5FF"
-    readonly property color colCyanDim: "#004858"
-    readonly property color colText:    "#80E8F0"
-    readonly property color colTextDim: "#507080"
+    readonly property color colBg:      "#0E0505"
+    readonly property color colPanel:   "#1E0A0A"
+    readonly property color colCyan:    "#FF5A00"
+    readonly property color colCyanDim: "#582000"
+    readonly property color colText:    "#F0C080"
+    readonly property color colTextDim: "#805040"
     readonly property color colError:   "#FF3030"
 
     Rectangle { anchors.fill:parent; color:root.colBg }
+
+    Image {
+        anchors.fill: parent
+        source: "background.svg"
+        fillMode: Image.PreserveAspectCrop
+        opacity: 0.55
+    }
 
     Repeater {
         model:[{ax:0,ay:0,r:0},{ax:root.width,ay:0,r:90},{ax:root.width,ay:root.height,r:180},{ax:0,ay:root.height,r:270}]

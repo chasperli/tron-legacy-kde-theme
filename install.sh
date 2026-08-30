@@ -7,7 +7,7 @@ set -euo pipefail
 
 # ── Version & Paths ─────────────────────────────────────────────────────────
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-VERSION="0.1.0"
+VERSION="0.1.2"
 
 # ── Destinations ──────────────────────────────────────────────────────────────
 COLOR_DEST="${HOME:?}/.local/share/color-schemes"
@@ -242,13 +242,19 @@ echo "── PNG Wallpapers ─────────────────�
 
 IMG_SRC_169="$SCRIPT_DIR/wallpaper/TronLegacy/contents/images/1920x1080.svg"
 IMG_SRC_32="$SCRIPT_DIR/wallpaper/TronLegacy/contents/images/1920x1280.svg"
+IMG_SRC_169_CLU="$SCRIPT_DIR/wallpaper/TronLegacy/contents/images/1920x1080-clu.svg"
+IMG_SRC_32_CLU="$SCRIPT_DIR/wallpaper/TronLegacy/contents/images/1920x1280-clu.svg"
 PNG_169="$WALLPAPER_DEST/TronLegacy/contents/images/1920x1080.png"
 PNG_32="$WALLPAPER_DEST/TronLegacy/contents/images/1920x1280.png"
+PNG_169_CLU="$WALLPAPER_DEST/TronLegacy/contents/images/1920x1080-clu.png"
+PNG_32_CLU="$WALLPAPER_DEST/TronLegacy/contents/images/1920x1280-clu.png"
 REPO_PNG="$WALLPAPER_DEST/TronLegacy/contents/images/repo-preview.png"
 
 if command -v rsvg-convert &>/dev/null; then
     dry "rsvg-convert -w 1920 -h 1080 '$IMG_SRC_169' -o '$PNG_169'" && ok "PNG 1920×1080 (16:9)"
     dry "rsvg-convert -w 1920 -h 1280 '$IMG_SRC_32' -o '$PNG_32'"  && ok "PNG 1920×1280 (3:2)"
+    dry "rsvg-convert -w 1920 -h 1080 '$IMG_SRC_169_CLU' -o '$PNG_169_CLU'" && ok "PNG 1920×1080 CLU (16:9)"
+    dry "rsvg-convert -w 1920 -h 1280 '$IMG_SRC_32_CLU' -o '$PNG_32_CLU'"  && ok "PNG 1920×1280 CLU (3:2)"
     dry "rsvg-convert -w 1280 -h 853 '$IMG_SRC_32' -o '$REPO_PNG'"  && ok "PNG repo preview"
 
     if ! $SKIP_SDDM && command -v sudo &>/dev/null && [[ -d "$SDDM_DEST/TronLegacy" ]]; then
@@ -257,6 +263,8 @@ if command -v rsvg-convert &>/dev/null; then
 elif command -v inkscape &>/dev/null; then
     dry "inkscape --export-type=png --export-width=1920 --export-height=1080 '$IMG_SRC_169' --export-filename='$PNG_169'" && ok "PNG 1920×1080 (16:9)"
     dry "inkscape --export-type=png --export-width=1920 --export-height=1280 '$IMG_SRC_32' --export-filename='$PNG_32'" && ok "PNG 1920×1280 (3:2)"
+    dry "inkscape --export-type=png --export-width=1920 --export-height=1080 '$IMG_SRC_169_CLU' --export-filename='$PNG_169_CLU'" && ok "PNG 1920×1080 CLU (16:9)"
+    dry "inkscape --export-type=png --export-width=1920 --export-height=1280 '$IMG_SRC_32_CLU' --export-filename='$PNG_32_CLU'" && ok "PNG 1920×1280 CLU (3:2)"
 else
     skip "rsvg-convert and inkscape not found — install librsvg for automatic PNG generation"
 fi

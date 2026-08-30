@@ -2,7 +2,7 @@
     "name": "tron-legacy-theme",
     "displayName": "Tron Legacy",
     "description": "A dark, neon-cyan theme inspired by the Tron: Legacy aesthetic.",
-    "version": "0.1.0",
+    "version": "0.1.2",
     "publisher": "lukas",
     "engines": { "vscode": "^1.74.0" },
     "categories": ["Themes"],
