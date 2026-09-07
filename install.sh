@@ -22,6 +22,7 @@ NVIM_DEST="${HOME}/.config/nvim/colors"
 VSCODE_DEST="${HOME}/.vscode/extensions/tron-legacy-theme"
 PLASMOID_DEST="${HOME}/.local/share/plasma/plasmoids"
 SYSTEMD_DEST="${HOME}/.config/systemd/user"
+GTK_DEST="${HOME}/.themes"
 SDDM_DEST="/usr/share/sddm/themes"
 
 # ── Flags ────────────────────────────────────────────────────────────────────
@@ -30,6 +31,7 @@ UNINSTALL=false
 SKIP_SDDM=false
 SKIP_EDITORS=false
 SKIP_PLASMOID=false
+ENABLE_FLATPAK=false
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
 ok()     { echo "  [OK] $*"; }
@@ -58,6 +60,7 @@ Options:
   --skip-sddm      Do not install/remove SDDM theme (requires sudo)
   --skip-editors   Do not install/remove editor themes
   --skip-plasmoid  Do not install/remove Container Monitor widget
+  --flatpak        Enable Flatpak app overrides + VSCodium theme
   -h, --help       Show this help
 
 Examples:
@@ -67,13 +70,14 @@ Examples:
 EOF
 }
 
-while [[ $# -gt 0 ]]; do
+    while [[ $# -gt 0 ]]; do
     case "$1" in
         --uninstall)     UNINSTALL=true; shift ;;
         --dry-run)       DRY_RUN=true; shift ;;
         --skip-sddm)     SKIP_SDDM=true; shift ;;
         --skip-editors)  SKIP_EDITORS=true; shift ;;
         --skip-plasmoid) SKIP_PLASMOID=true; shift ;;
+        --flatpak)       ENABLE_FLATPAK=true; shift ;;
         -h|--help)       usage; exit 0 ;;
         *)               echo "Unknown option: $1"; usage; exit 1 ;;
     esac
@@ -106,6 +110,44 @@ maybe_backup() {
     fi
 }
 
+# ── Flatpak helpers ─────────────────────────────────────────────────────────
+setup_flatpak() {
+    if ! command -v flatpak &>/dev/null; then
+        warn "flatpak not found — skipping Flatpak support"
+        return
+    fi
+
+    echo ""
+    echo "── Flatpak GTK Theme Support ────────────────────────────────────────────"
+
+    # Global user override (covers system + user installed apps)
+    if $DRY_RUN; then
+        ok "Would set global Flatpak user override: GTK_THEME=TronLegacy + ~/.themes access"
+    else
+        flatpak override --user --filesystem=~/.themes --env=GTK_THEME=TronLegacy \
+            && ok "Global Flatpak override set (GTK_THEME=TronLegacy + ~/.themes)"
+    fi
+
+    # VSCodium Flatpak — also install the VS Code theme inside its sandbox
+    local vscodium_ext_dir="${HOME}/.var/app/com.vscodium.codium/config/VSCodium/extensions/tron-legacy-theme"
+    if flatpak list --app --columns=application 2>/dev/null | grep -qx "com.vscodium.codium"; then
+        if [[ -d "$SCRIPT_DIR/vscode/tron-legacy" ]]; then
+            dry "mkdir -p '$(dirname "$vscodium_ext_dir")'"
+            dry "rm -rf '$vscodium_ext_dir'"
+            dry "cp -r '$SCRIPT_DIR/vscode/tron-legacy/.' '$vscodium_ext_dir/'"
+            if ! $DRY_RUN; then
+                ok "VSCodium Flatpak theme installed"
+            else
+                ok "Would install VSCodium Flatpak theme"
+            fi
+        else
+            skip "VS Code theme source not found"
+        fi
+    else
+        skip "VSCodium Flatpak not installed"
+    fi
+}
+
 # ═════════════════════════════════════════════════════════════════════════════
 #  UNINSTALL
 # ═════════════════════════════════════════════════════════════════════════════
@@ -119,7 +161,8 @@ if $UNINSTALL; then
         "$AURORAE_DEST/TronLegacy" \
         "$LAF_DEST/com.tronlegacy.desktop" \
         "$WALLPAPER_DEST/TronLegacy" \
-        "$KONSOLE_DEST/TronLegacy.colorscheme"; do
+        "$KONSOLE_DEST/TronLegacy.colorscheme" \
+        "$GTK_DEST/TronLegacy"; do
         if [[ -e "$target" ]]; then
             dry "rm -rf '$target'" && ok "Removed $target" || true
         fi
@@ -144,7 +187,8 @@ if $UNINSTALL; then
             "$KATE_DEST/tron-legacy.theme" \
             "$VIM_DEST/tron_legacy.vim" \
             "$NVIM_DEST/tron_legacy.lua" \
-            "$VSCODE_DEST"; do
+            "$VSCODE_DEST" \
+            "${HOME}/.var/app/com.vscodium.codium/config/VSCodium/extensions/tron-legacy-theme"; do
             if [[ -e "$target" ]]; then
                 dry "rm -rf '$target'" && ok "Removed $target" || true
             fi
@@ -191,7 +235,7 @@ fi
 
 if [[ ${#MISSING_DEPS[@]} -gt 0 ]]; then
     warn "Missing optional dependencies (wallpaper generation will be skipped):"
-    printf '  - %s\n' "${MISSING_DEPS[@]}"
+    printf >&2 '  - %s\n' "${MISSING_DEPS[@]}"
 fi
 
 # ── KDE / Plasma ────────────────────────────────────────────────────────────
@@ -222,6 +266,21 @@ dry "cp -r '$SCRIPT_DIR/wallpaper/TronLegacy' '$WALLPAPER_DEST/'" && ok "Wallpap
 maybe_backup "$KONSOLE_DEST/TronLegacy.colorscheme"
 dry "cp '$SCRIPT_DIR/konsole/TronLegacy.colorscheme' '$KONSOLE_DEST/'" && ok "Konsole Colors"
 
+# ── GTK Theme ───────────────────────────────────────────────────────────────
+echo ""
+echo "── GTK Theme ────────────────────────────────────────────────────────────"
+
+dry "mkdir -p '$GTK_DEST'"
+
+maybe_backup "$GTK_DEST/TronLegacy"
+dry "rm -rf '$GTK_DEST/TronLegacy'"
+dry "cp -r '$SCRIPT_DIR/gtk/TronLegacy' '$GTK_DEST/'" && ok "GTK Theme (3 + 4)"
+
+# ── Flatpak overrides ───────────────────────────────────────────────────────
+if $ENABLE_FLATPAK; then
+    setup_flatpak
+fi
+
 # ── SDDM ────────────────────────────────────────────────────────────────────
 if ! $SKIP_SDDM; then
     echo ""
@@ -230,6 +289,13 @@ if ! $SKIP_SDDM; then
         dry "sudo mkdir -p '$SDDM_DEST'"
         dry "sudo rm -rf '$SDDM_DEST/TronLegacy'"
         dry "sudo cp -r '$SCRIPT_DIR/sddm/TronLegacy' '$SDDM_DEST/'" && ok "SDDM Theme"
+        echo ""
+        echo "  To test the SDDM theme safely before activating it, run:"
+        echo "    sddm-greeter --test-mode --theme '$SDDM_DEST/TronLegacy'"
+        echo ""
+        echo "  To activate it system-wide, create a config file:"
+        echo "    echo '[Theme]' | sudo tee /etc/sddm.conf.d/99-tron-theme.conf"
+        echo "    echo 'Current=TronLegacy' | sudo tee -a /etc/sddm.conf.d/99-tron-theme.conf"
     else
         warn "sudo not found — install SDDM theme manually:"
         warn "  sudo cp -r '$SCRIPT_DIR/sddm/TronLegacy' '$SDDM_DEST/'"
@@ -258,13 +324,17 @@ if command -v rsvg-convert &>/dev/null; then
     dry "rsvg-convert -w 1280 -h 853 '$IMG_SRC_32' -o '$REPO_PNG'"  && ok "PNG repo preview"
 
     if ! $SKIP_SDDM && command -v sudo &>/dev/null && [[ -d "$SDDM_DEST/TronLegacy" ]]; then
-        dry "sudo cp '$PNG_32' '$SDDM_DEST/TronLegacy/tron-legacy-wallpaper.png'" && ok "SDDM background"
+        dry "sudo cp '$PNG_32_CLU' '$SDDM_DEST/TronLegacy/tron-legacy-wallpaper.png'" && ok "SDDM background (CLU)"
     fi
 elif command -v inkscape &>/dev/null; then
     dry "inkscape --export-type=png --export-width=1920 --export-height=1080 '$IMG_SRC_169' --export-filename='$PNG_169'" && ok "PNG 1920×1080 (16:9)"
     dry "inkscape --export-type=png --export-width=1920 --export-height=1280 '$IMG_SRC_32' --export-filename='$PNG_32'" && ok "PNG 1920×1280 (3:2)"
     dry "inkscape --export-type=png --export-width=1920 --export-height=1080 '$IMG_SRC_169_CLU' --export-filename='$PNG_169_CLU'" && ok "PNG 1920×1080 CLU (16:9)"
     dry "inkscape --export-type=png --export-width=1920 --export-height=1280 '$IMG_SRC_32_CLU' --export-filename='$PNG_32_CLU'" && ok "PNG 1920×1280 CLU (3:2)"
+
+    if ! $SKIP_SDDM && command -v sudo &>/dev/null && [[ -d "$SDDM_DEST/TronLegacy" ]]; then
+        dry "sudo cp '$PNG_32_CLU' '$SDDM_DEST/TronLegacy/tron-legacy-wallpaper.png'" && ok "SDDM background (CLU)"
+    fi
 else
     skip "rsvg-convert and inkscape not found — install librsvg for automatic PNG generation"
 fi
@@ -350,6 +420,20 @@ if $DRY_RUN; then
     echo "Dry-run complete. No files were modified."
 fi
 echo "Apply the theme via: System Settings → Appearance → Global Theme → Tron Legacy"
+echo ""
+echo "GTK / Flatpak:"
+echo "  Host GTK apps:   gsettings set org.gnome.desktop.interface gtk-theme 'TronLegacy'"
+if $ENABLE_FLATPAK; then
+    echo "  Flatpak override already applied (GTK_THEME + ~/.themes access)."
+    echo "  Restart Flatpak apps to pick up the theme."
+else
+    echo "  Flatpak support was NOT enabled. Re-run with --flatpak to apply overrides."
+fi
+echo ""
+echo "  Supported Flatpak apps (GTK CSD + native widgets):"
+echo "    Flatseal, GNOME Boxes, EasyTAG, Loupe, LibreOffice, Audacity, DBeaver"
+echo "  Limited support (Electron / Qt apps only window decorations):"
+echo "    Threema, VSCodium, Obsidian, ONLYOFFICE, OpenShot, VLC"
 echo ""
 if ! $SKIP_PLASMOID; then
     echo "Widget: Right-click Desktop → Add Widgets → Tron Container Monitor"

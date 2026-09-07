@@ -1,1 +1,21 @@
-{"KPlugin":{"Name":"Tron Legacy","Id":"TronLegacy","License":"GPL-2.0-or-later","ServiceTypes":["Plasma/Wallpaper"],"Version":"0.1.2"}}
+{
+    "KPackageStructure": "Plasma/Wallpaper/Images",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Email": "lukas.mathis@ikmail.ch",
+                "Name": "Lukas"
+            }
+        ],
+        "Description": "Tron Legacy Wallpaper",
+        "Id": "TronLegacy",
+        "License": "GPL-2.0-or-later",
+        "Name": "Tron Legacy",
+        "Version": "0.1.2"
+    },
+    "X-KDE-PlasmaImageWallpaper-AccentColor": {
+        "Light": "#00F5FF",
+        "Dark": "#00F5FF"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

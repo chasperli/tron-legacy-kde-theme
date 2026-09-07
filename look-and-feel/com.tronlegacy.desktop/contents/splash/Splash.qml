@@ -7,10 +7,10 @@ Item {
     property int stage: 0
     onStageChanged: { progressAnim.to = stage/6.0; progressAnim.restart() }
 
-    readonly property color colBg:      "#050A0E"
-    readonly property color colCyan:    "#00F5FF"
-    readonly property color colCyanDim: "#004858"
-    readonly property color colTextDim: "#507080"
+    readonly property color colBg:      "#0E0505"
+    readonly property color colCyan:    "#FF5A00"
+    readonly property color colCyanDim: "#582000"
+    readonly property color colTextDim: "#805040"
 
     Rectangle { anchors.fill: parent; color: root.colBg }
 

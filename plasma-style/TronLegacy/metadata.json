@@ -7,7 +7,7 @@
             }
         ],
         "Description": "Tron Legacy Plasma Style",
-        "Id": "tron-legacy",
+        "Id": "TronLegacy",
         "License": "GPL-2.0-or-later",
         "Name": "Tron Legacy",
         "Version": "0.1.2"

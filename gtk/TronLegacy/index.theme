@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=X-GNOME-Metatheme
+Name=Tron Legacy
+Comment=Tron Legacy dark theme for GTK3 and GTK4
+Encoding=UTF-8
+
+[X-GNOME-Metatheme]
+GtkTheme=TronLegacy
+MetacityTheme=TronLegacy
+IconTheme=TronLegacy
+CursorTheme=TronLegacy
+ButtonLayout=menu:minimize,maximize,close

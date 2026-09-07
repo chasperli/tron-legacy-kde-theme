@@ -6,6 +6,8 @@ A comprehensive KDE Plasma 6 global theme inspired by the *Tron: Legacy* visual 
 
 The project also includes a custom Plasma 6 widget (`Tron Container Monitor`) that displays live Podman/Distrobox container stats using a systemd user timer backend.
 
+**Development environment:** Arch Linux host, running inside a Distrobox container.
+
 ## Project Structure
 
 | Path | Purpose |
@@ -14,13 +16,14 @@ The project also includes a custom Plasma 6 widget (`Tron Container Monitor`) th
 | `plasma-style/TronLegacy/` | Plasma desktop theme (SVG widgets, dialogs, panel backgrounds). Includes `opaque/` and `translucent/` variants |
 | `aurorae/TronLegacy/` | Window decoration theme (Aurorae engine). SVG buttons + `TronLegacy.rc` config |
 | `look-and-feel/com.tronlegacy.desktop/` | Global theme package (`metadata.json`, `contents/defaults`, splash & lockscreen QML) |
-| `wallpaper/TronLegacy/` | Wallpaper package with SVG sources in `contents/images/` |
+| `wallpaper/TronLegacy/` | Image wallpaper package (`Plasma/Wallpaper/Images`). SVG sources live in `contents/images/`; install script generates PNG fallbacks |
 | `sddm/TronLegacy/` | SDDM (login manager) theme |
 | `konsole/TronLegacy.colorscheme` | Konsole terminal color scheme |
 | `kate/tron-legacy.theme` | Kate/KWrite syntax highlighting theme (JSON) |
 | `vim/colors/` | Vim colorscheme (`tron_legacy.vim`) |
 | `nvim/colors/` | Neovim Lua colorscheme (`tron_legacy.lua`) |
 | `vscode/tron-legacy/` | VS Code theme extension files |
+| `gtk/TronLegacy/` | GTK3 & GTK4 theme (`index.theme`, `gtk-3.0/gtk.css`, `gtk-4.0/gtk.css`) |
 | `plasmoid/tron-container-monitor/` | Plasma 6 applet for monitoring Podman containers |
 | `systemd/` | User systemd service & timer for the plasmoid backend |
 | `install.sh` | Bash installer that copies assets to the correct KDE paths and enables the systemd timer |
@@ -71,12 +74,19 @@ Always keep these colors in sync across all components — the QML files, SVG st
 ./install.sh
 ```
 
+For Flatpak support, run with the `--flatpak` flag:
+```bash
+./install.sh --flatpak
+```
+
 This script:
 1. Copies color scheme, plasma style, aurorae, look-and-feel, wallpaper, konsole scheme into `~/.local/share/…`
 2. Installs the SDDM theme to `/usr/share/sddm/themes` (requires `sudo`)
 3. Converts SVG wallpapers to PNG using `rsvg-convert` (falls back to `inkscape`)
 4. Copies editor themes to Vim/Neovim/VS Code paths
-5. Installs the plasmoid and systemd user timer, then starts it
+5. Installs the GTK3/GTK4 theme to `~/.themes/TronLegacy`
+6. Optionally sets Flatpak overrides (`GTK_THEME=TronLegacy` + `~/.themes` access)
+7. Installs the plasmoid and systemd user timer, then starts it
 
 ### Requirements
 
@@ -112,9 +122,52 @@ Add the widget via: **Right-click Desktop → Add Widgets → Tron Container Mon
 
 ### Look and Feel (`look-and-feel/`)
 
-- `contents/defaults` — maps components to theme names (color scheme, plasma style, kwin theme, splash, lock screen)
+- `contents/defaults` — maps components to theme names (color scheme, plasma style, kwin theme, wallpaper, splash, lock screen)
 - `contents/splash/Splash.qml` — animated boot splash with progress stages
 - `contents/lockscreen/LockScreen.qml` — lock screen UI
+
+### GTK Theme (`gtk/`)
+
+- `index.theme` — theme descriptor
+- `gtk-3.0/gtk.css` — GTK3 stylesheet using the Tron Legacy palette
+- `gtk-4.0/gtk.css` — GTK4 stylesheet with Libadwaita-compatible named colors (`accent_bg_color`, `window_bg_color`, `popover_bg_color`, etc.)
+
+**Host GTK apps:**
+- Set the theme via **System Settings → Appearance → Application Style → GTK** or:
+  ```bash
+  gsettings set org.gnome.desktop.interface gtk-theme 'TronLegacy'
+  ```
+
+**Flatpak apps:**
+Run the installer with `--flatpak` to automatically set a global user override:
+```bash
+./install.sh --flatpak
+```
+This applies `GTK_THEME=TronLegacy` and grants `~/.themes` access to **all** Flatpak apps run by the user, regardless of whether they are installed system-wide or per-user.
+
+If you prefer to configure apps individually, use **Flatseal** and enable:
+- Filesystem: `~/.themes`
+- Environment: `GTK_THEME=TronLegacy`
+
+**Supported Flatpak apps (full GTK native widgets + CSD):**
+- Flatseal (`com.github.tchx84.Flatseal`) — GTK4
+- GNOME Boxes (`org.gnome.Boxes`) — GTK4
+- EasyTAG (`org.gnome.EasyTAG`) — GTK3
+- Loupe (`org.gnome.Loupe`) — GTK4
+- LibreOffice (`org.libreoffice.LibreOffice`) — GTK3
+- Audacity (`org.audacityteam.Audacity`) — GTK3
+- DBeaver (`io.dbeaver.DBeaverCommunity`) — Eclipse/SWT on GTK3
+
+**Limited support (window decorations only):**
+- Threema (`ch.threema.threema-web-desktop`) — Electron (Chromium). GTK3 CSDs are themed; the app UI itself is web-based.
+- VSCodium (`com.vscodium.codium`) — Electron. CSDs are themed; the editor theme is installed separately (see below).
+- Obsidian (`md.obsidian.Obsidian`) — Electron. CSDs are themed; the app UI itself is web-based.
+- ONLYOFFICE (`org.onlyoffice.desktopeditors`) — Qt-based. Does not use GTK for the main UI; only the Flatpak portal file-chooser may be affected.
+- OpenShot (`org.openshot.OpenShot`) — Qt-based. Same limitation as ONLYOFFICE.
+- VLC (`org.videolan.VLC`) — Qt-based. Same limitation as ONLYOFFICE.
+
+**VSCodium Flatpak editor theme:**
+When `--flatpak` is used and `com.vscodium.codium` is installed, the installer copies the VS Code theme into the Flatpak-specific extensions folder so it appears inside VSCodium without needing to inject the host `~/.vscode` directory.
 
 ### Container Monitor Plasmoid (`plasmoid/`)
 

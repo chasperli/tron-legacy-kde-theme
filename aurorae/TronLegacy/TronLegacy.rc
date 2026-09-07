@@ -1,6 +1,6 @@
 [General]
-ActiveTextColor=00D4E8
-InactiveTextColor=507080
+ActiveTextColor=#00D4E8
+InactiveTextColor=#507080
 
 [Layout]
 BorderLeft=4
