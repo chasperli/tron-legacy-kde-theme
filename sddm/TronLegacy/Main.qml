@@ -91,6 +91,13 @@ Rectangle {
                 currentIndex: userModel.lastIndex
                 font.family: "monospace"; font.pixelSize: 14
 
+                background: Rectangle {
+                    color: root.colPanel
+                    border.color: root.colCyanDim
+                    border.width: 1
+                    radius: 3
+                }
+
                 contentItem: Text {
                     text: userCombo.currentText
                     font: userCombo.font
@@ -109,6 +116,9 @@ Rectangle {
                         currentIndex: userCombo.highlightedIndex
                         delegate: ItemDelegate {
                             width: userCombo.width
+                            background: Rectangle {
+                                color: parent.highlighted ? root.colCyanDim : root.colPanel
+                            }
                             contentItem: Text {
                                 text: model.name
                                 font: userCombo.font
@@ -181,6 +191,13 @@ Rectangle {
                 currentIndex: sessionModel.lastIndex
                 font.family: "monospace"; font.pixelSize: 12
 
+                background: Rectangle {
+                    color: root.colPanel
+                    border.color: root.colCyanDim
+                    border.width: 1
+                    radius: 3
+                }
+
                 contentItem: Text {
                     text: sessionCombo.currentText
                     font: sessionCombo.font
@@ -199,6 +216,9 @@ Rectangle {
                         currentIndex: sessionCombo.highlightedIndex
                         delegate: ItemDelegate {
                             width: sessionCombo.width
+                            background: Rectangle {
+                                color: parent.highlighted ? root.colCyanDim : root.colPanel
+                            }
                             contentItem: Text {
                                 text: model.name
                                 font: sessionCombo.font
