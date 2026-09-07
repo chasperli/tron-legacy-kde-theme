@@ -59,7 +59,7 @@ Item {
                 font.family:"monospace"; font.pixelSize:20; font.letterSpacing:4; color:root.colText }
             Rectangle { anchors.horizontalCenter:parent.horizontalCenter; width:parent.width; height:1; color:root.colCyanDim }
             Rectangle {
-                width:parent.width; height:44; radius:3; color:"#060E16"
+                width:parent.width; height:44; radius:3; color:"#160A06"
                 border.color:pwField.focus?root.colCyan:root.colCyanDim; border.width:pwField.focus?1.5:1
                 TextInput {
                     id:pwField; anchors.verticalCenter:parent.verticalCenter
