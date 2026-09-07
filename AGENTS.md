@@ -197,7 +197,7 @@ All KDE-facing packages use `metadata.json` (or `metadata.desktop` for SDDM) wit
         "Id": "com.tronlegacy.desktop",
         "License": "GPL-2.0-or-later",
         "Name": "Tron Legacy",
-        "Version": "0.1.2"
+        "Version": "0.1.3"
     },
     "X-Plasma-API-Minimum-Version": "6.0"
 }
