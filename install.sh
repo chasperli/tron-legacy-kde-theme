@@ -31,6 +31,7 @@ UNINSTALL=false
 SKIP_SDDM=false
 SKIP_EDITORS=false
 SKIP_PLASMOID=false
+SKIP_TAILSCALE=false
 ENABLE_FLATPAK=false
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
@@ -60,6 +61,7 @@ Options:
   --skip-sddm      Do not install/remove SDDM theme (requires sudo)
   --skip-editors   Do not install/remove editor themes
   --skip-plasmoid  Do not install/remove Container Monitor widget
+  --skip-tailscale Do not install/remove Tailscale Monitor widget
   --flatpak        Enable Flatpak app overrides + VSCodium theme
   -h, --help       Show this help
 
@@ -77,6 +79,7 @@ EOF
         --skip-sddm)     SKIP_SDDM=true; shift ;;
         --skip-editors)  SKIP_EDITORS=true; shift ;;
         --skip-plasmoid) SKIP_PLASMOID=true; shift ;;
+        --skip-tailscale) SKIP_TAILSCALE=true; shift ;;
         --flatpak)       ENABLE_FLATPAK=true; shift ;;
         -h|--help)       usage; exit 0 ;;
         *)               echo "Unknown option: $1"; usage; exit 1 ;;
@@ -197,11 +200,30 @@ if $UNINSTALL; then
 
     if ! $SKIP_PLASMOID; then
         echo ""
-        echo "── Removing Plasma widget + systemd ─────────────────────────────────────"
+        echo "── Removing Container Monitor widget + systemd ──────────────────────────"
         if [[ -d "$PLASMOID_DEST/com.tronlegacy.containermonitor" ]]; then
-            dry "rm -rf '$PLASMOID_DEST/com.tronlegacy.containermonitor'" && ok "Removed widget"
+            dry "rm -rf '$PLASMOID_DEST/com.tronlegacy.containermonitor'" && ok "Removed Container widget"
         fi
         for unit in tron-containers.service tron-containers.timer; do
+            if [[ -f "$SYSTEMD_DEST/$unit" ]]; then
+                if ! $DRY_RUN && command -v systemctl &>/dev/null; then
+                    systemctl --user disable --now "$unit" 2>/dev/null || true
+                fi
+                dry "rm -f '$SYSTEMD_DEST/$unit'"
+            fi
+        done
+        if command -v systemctl &>/dev/null && ! $DRY_RUN; then
+            systemctl --user daemon-reload 2>/dev/null || true
+        fi
+    fi
+
+    if ! $SKIP_TAILSCALE; then
+        echo ""
+        echo "── Removing Tailscale Monitor widget + systemd ──────────────────────────"
+        if [[ -d "$PLASMOID_DEST/com.tronlegacy.tailscalemonitor" ]]; then
+            dry "rm -rf '$PLASMOID_DEST/com.tronlegacy.tailscalemonitor'" && ok "Removed Tailscale widget"
+        fi
+        for unit in tron-tailscale.service tron-tailscale.timer; do
             if [[ -f "$SYSTEMD_DEST/$unit" ]]; then
                 if ! $DRY_RUN && command -v systemctl &>/dev/null; then
                     systemctl --user disable --now "$unit" 2>/dev/null || true
@@ -409,7 +431,47 @@ if ! $SKIP_PLASMOID; then
             warn "Fetch failed — is podman installed and running?"
         fi
     elif $DRY_RUN; then
-        ok "Would run first fetch"
+        ok "Would run first fetch (containers)"
+    fi
+fi
+
+# ── Tailscale Widget + Systemd ──────────────────────────────────────────────
+if ! $SKIP_TAILSCALE; then
+    echo ""
+    echo "── Tailscale Widget + Systemd Backend ───────────────────────────────────"
+
+    dry "mkdir -p '$PLASMOID_DEST'"
+    maybe_backup "$PLASMOID_DEST/com.tronlegacy.tailscalemonitor"
+    dry "rm -rf '$PLASMOID_DEST/com.tronlegacy.tailscalemonitor'"
+    dry "cp -r '$SCRIPT_DIR/plasmoid/tron-tailscale-monitor' '$PLASMOID_DEST/com.tronlegacy.tailscalemonitor'"
+    if ! $DRY_RUN; then
+        chmod +x "$PLASMOID_DEST/com.tronlegacy.tailscalemonitor/contents/code/fetch.sh"
+    fi
+    ok "Tailscale Monitor widget"
+
+    dry "mkdir -p '$SYSTEMD_DEST'"
+    dry "cp '$SCRIPT_DIR/systemd/tron-tailscale.service' '$SYSTEMD_DEST/'"
+    dry "cp '$SCRIPT_DIR/systemd/tron-tailscale.timer' '$SYSTEMD_DEST/'"
+
+    if command -v systemctl &>/dev/null && ! $DRY_RUN; then
+        systemctl --user daemon-reload
+        systemctl --user enable --now tron-tailscale.timer && ok "Tailscale timer enabled & started"
+    elif $DRY_RUN; then
+        ok "Would enable & start tron-tailscale.timer"
+    else
+        warn "systemctl not found — timer not started. Start manually if needed."
+    fi
+
+    echo ""
+    echo "── First Tailscale fetch ────────────────────────────────────────────────"
+    if ! $DRY_RUN && [[ -x "$PLASMOID_DEST/com.tronlegacy.tailscalemonitor/contents/code/fetch.sh" ]]; then
+        if "$PLASMOID_DEST/com.tronlegacy.tailscalemonitor/contents/code/fetch.sh"; then
+            ok "First fetch → /tmp/tron-tailscale.json"
+        else
+            warn "Fetch failed — is tailscale installed and logged in?"
+        fi
+    elif $DRY_RUN; then
+        ok "Would run first fetch (tailscale)"
     fi
 fi
 
@@ -437,6 +499,10 @@ echo "    Threema, VSCodium, Obsidian, ONLYOFFICE, OpenShot, VLC"
 echo ""
 if ! $SKIP_PLASMOID; then
     echo "Widget: Right-click Desktop → Add Widgets → Tron Container Monitor"
+    echo ""
+fi
+if ! $SKIP_TAILSCALE; then
+    echo "Widget: Right-click Desktop → Add Widgets → Tron Tailscale Monitor"
     echo ""
 fi
 echo "Editor:"

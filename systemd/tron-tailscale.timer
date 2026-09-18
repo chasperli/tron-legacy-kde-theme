@@ -1,0 +1,10 @@
+[Unit]
+Description=Tron Tailscale Monitor — update every minute
+
+[Timer]
+OnBootSec=15s
+OnUnitActiveSec=60s
+Unit=tron-tailscale.service
+
+[Install]
+WantedBy=timers.target

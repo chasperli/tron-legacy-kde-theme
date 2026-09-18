@@ -1,0 +1,6 @@
+[Unit]
+Description=Tron Tailscale Monitor — fetch tailscale status
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/share/plasma/plasmoids/com.tronlegacy.tailscalemonitor/contents/code/fetch.sh
