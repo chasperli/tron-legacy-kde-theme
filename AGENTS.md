@@ -25,7 +25,8 @@ The project also includes a custom Plasma 6 widget (`Tron Container Monitor`) th
 | `vscode/tron-legacy/` | VS Code theme extension files |
 | `gtk/TronLegacy/` | GTK3 & GTK4 theme (`index.theme`, `gtk-3.0/gtk.css`, `gtk-4.0/gtk.css`) |
 | `plasmoid/tron-container-monitor/` | Plasma 6 applet for monitoring Podman containers |
-| `systemd/` | User systemd service & timer for the plasmoid backend |
+| `plasmoid/tron-tailscale-monitor/` | Plasma 6 applet for monitoring Tailscale peers |
+| `systemd/` | User systemd service & timer for the plasmoid backend, plus a **system-wide** timer for the SDDM status collector |
 | `install.sh` | Bash installer that copies assets to the correct KDE paths and enables the systemd timer |
 
 ## Tech Stack & Formats
@@ -37,7 +38,7 @@ The project also includes a custom Plasma 6 widget (`Tron Container Monitor`) th
 - **KDE `.colorscheme`** — Konsole color format
 - **JSON** — Kate theme, metadata files
 - **Bash** — installer (`install.sh`) and plasmoid data fetcher (`fetch.sh`)
-- **systemd** — user unit (`tron-containers.timer` + `.service`)
+- **systemd** — user units (`tron-containers.timer` + `.service`) and **system** unit (`tron-sddm-status.timer` + `.service`) for the SDDM status backend
 
 ## Design Language & Conventions
 
@@ -94,6 +95,7 @@ This script:
 - `bash`, `rsvg-convert` (package `librsvg`) or `inkscape`
 - `podman` (for the Container Monitor widget)
 - `sudo` (for SDDM theme)
+- `NetworkManager` (`nmcli`) and/or `tailscale` *(optional — for the SDDM login-screen status panel)*
 
 ### After Install
 
@@ -102,6 +104,17 @@ Apply the theme via: **System Settings → Appearance → Global Theme → Tron 
 Add the widget via: **Right-click Desktop → Add Widgets → Tron Container Monitor**
 
 ## Component Reference
+
+### SDDM Login Theme (`sddm/`)
+
+- `Main.qml` — SDDM greeter UI. Displays a clock, user/password panel, power buttons and a **live network status panel** (WLAN name, LAN name, Tailscale state). Reads `/var/cache/sddm/network-status.json` via `XMLHttpRequest` every 5 seconds.
+- `network-status.sh` — collects active connections via `nmcli` and Tailscale peer list via `tailscale status --json`, writes the JSON cache file.
+- `theme.conf` / `metadata.desktop` — theme configuration.
+
+**Architecture note:** The SDDM greeter runs as an unprivileged user and cannot execute shell commands or query the network directly. Instead:
+1. A **system-wide** systemd timer (`tron-sddm-status.timer`) triggers `network-status.sh` as `root` every 30 seconds
+2. The QML polls the resulting JSON file (`/var/cache/sddm/network-status.json`) on a timer
+3. The script gracefully degrades when `nmcli` or `tailscale` are absent, writing an empty but valid JSON object so the UI never breaks
 
 ### Plasma Style (`plasma-style/`)
 

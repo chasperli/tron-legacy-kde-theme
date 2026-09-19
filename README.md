@@ -12,6 +12,7 @@
 - **Wallpapers** — SVG-based wallpapers generated in 16:9 and 3:2 ratios.
 - **Terminal & Editors** — Color schemes for Konsole, Kate, Vim, Neovim and VS Code.
 - **Container Monitor Widget** — A Plasma 6 applet that displays live CPU & RAM stats for Podman / Distrobox containers.
+- **SDDM Network Status** — The login screen shows active WLAN / LAN connection names and Tailscale peer count in real-time.
 
 ## Screenshots
 
@@ -27,6 +28,7 @@
 - `bash`
 - `rsvg-convert` (package `librsvg`) or `inkscape`
 - `podman` *(optional, only for the Container Monitor widget)*
+- `NetworkManager` (`nmcli`) and/or `tailscale` *(optional, only for the SDDM login-screen status panel)*
 - `sudo` *(only for the SDDM login-manager theme)*
 
 ## Installation
@@ -82,8 +84,8 @@ kate/                  Syntax highlighting theme
 vim/                   Vim colorscheme
 nvim/                  Neovim Lua colorscheme
 vscode/                VS Code theme extension
-plasmoid/              Container Monitor widget
-systemd/               User timer & service for the widget backend
+plasmoid/              Container Monitor + Tailscale Monitor widgets
+systemd/               User timer & service for widgets, system timer for SDDM status
 install.sh             One-shot installer
 ```
 
@@ -113,6 +115,26 @@ The systemd timer is not running. Start it manually:
 systemctl --user daemon-reload
 systemctl --user enable --now tron-containers.timer
 ```
+
+### SDDM login screen shows all connections as "NOT CONNECTED"
+
+The system-wide status timer that feeds network data to the SDDM screen is not running. It is installed automatically by `./install.sh`, but you can verify or start it manually:
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable --now tron-sddm-status.timer
+```
+
+To see the raw data the greeter reads:
+```bash
+cat /var/cache/sddm/network-status.json
+```
+
+Requirements for this feature:
+- `NetworkManager` (`nmcli`) for WLAN / LAN names
+- `tailscale` for Tailscale peer list
+
+If either tool is missing the script gracefully degrades—the UI will simply show "NOT CONNECTED" or "OFFLINE" rather than breaking.
 
 ### Plasma shell does not restart after `killall plasmashell`
 
