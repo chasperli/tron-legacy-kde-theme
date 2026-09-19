@@ -5,5 +5,5 @@ Author=Lukas
 Email=lukas.mathis@ikmail.ch
 License=GPL-2.0-or-later
 Type=sddm-theme
-Version=0.1.0
+Version=0.1.5
 ConfigFile=theme.conf
