@@ -1,0 +1,9 @@
+[Unit]
+Description=Tron SDDM Network & Tailscale Status Collector
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/share/sddm/themes/TronLegacy/network-status.sh
+StandardOutput=null
+StandardError=null

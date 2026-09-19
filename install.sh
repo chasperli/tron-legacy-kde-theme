@@ -181,6 +181,18 @@ if $UNINSTALL; then
                 warn "sudo not found — remove manually: $SDDM_DEST/TronLegacy"
             fi
         fi
+        # Remove system-wide status timer
+        if command -v sudo &>/dev/null && command -v systemctl &>/dev/null; then
+            if systemctl list-unit-files tron-sddm-status.timer &>/dev/null; then
+                if ! $DRY_RUN; then
+                    sudo systemctl disable --now tron-sddm-status.timer 2>/dev/null || true
+                fi
+            fi
+            dry "sudo rm -f /etc/systemd/system/tron-sddm-status.timer /etc/systemd/system/tron-sddm-status.service"
+            if ! $DRY_RUN; then
+                sudo systemctl daemon-reload 2>/dev/null || true
+            fi
+        fi
     fi
 
     if ! $SKIP_EDITORS; then
@@ -311,6 +323,32 @@ if ! $SKIP_SDDM; then
         dry "sudo mkdir -p '$SDDM_DEST'"
         dry "sudo rm -rf '$SDDM_DEST/TronLegacy'"
         dry "sudo cp -r '$SCRIPT_DIR/sddm/TronLegacy' '$SDDM_DEST/'" && ok "SDDM Theme"
+
+        # Install & enable system status collector
+        if [[ -f "$SCRIPT_DIR/systemd/tron-sddm-status.service" ]] && [[ -f "$SCRIPT_DIR/systemd/tron-sddm-status.timer" ]]; then
+            dry "sudo cp '$SCRIPT_DIR/systemd/tron-sddm-status.service' /etc/systemd/system/"
+            dry "sudo cp '$SCRIPT_DIR/systemd/tron-sddm-status.timer' /etc/systemd/system/"
+            if ! $DRY_RUN; then
+                sudo systemctl daemon-reload
+                sudo systemctl enable --now tron-sddm-status.timer && ok "SDDM status timer enabled & started"
+            else
+                ok "Would enable & start tron-sddm-status.timer"
+            fi
+            if ! $DRY_RUN && [[ -f "$SDDM_DEST/TronLegacy/network-status.sh" ]]; then
+                sudo chmod +x "$SDDM_DEST/TronLegacy/network-status.sh"
+            fi
+            # Initial run so SDDM has data immediately
+            if ! $DRY_RUN; then
+                if sudo "$SDDM_DEST/TronLegacy/network-status.sh" 2>/dev/null; then
+                    ok "First SDDM status fetch"
+                else
+                    warn "Initial SDDM status fetch failed — check nmcli / tailscale availability"
+                fi
+            fi
+        else
+            warn "SDDM status service files not found — skipping system status backend"
+        fi
+
         echo ""
         echo "  To test the SDDM theme safely before activating it, run:"
         echo "    sddm-greeter --test-mode --theme '$SDDM_DEST/TronLegacy'"
