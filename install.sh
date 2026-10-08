@@ -307,6 +307,13 @@ dry "cp -r '$SCRIPT_DIR/aurorae/TronLegacy' '$AURORAE_DEST/'" && ok "Aurorae Dec
 maybe_backup "$LAF_DEST/com.tronlegacy.desktop"
 dry "rm -rf '$LAF_DEST/com.tronlegacy.desktop'"
 dry "cp -r '$SCRIPT_DIR/look-and-feel/com.tronlegacy.desktop' '$LAF_DEST/'" && ok "Look & Feel"
+# The splash is only selected when the global theme is applied. If Tron Legacy
+# is already the active global theme, select its splash directly.
+if command -v kreadconfig6 &>/dev/null && command -v kwriteconfig6 &>/dev/null \
+    && [[ "$(kreadconfig6 --file kdeglobals --group KDE --key LookAndFeelPackage)" == "com.tronlegacy.desktop" ]]; then
+    dry "kwriteconfig6 --file ksplashrc --group KSplash --key Engine KSplashQML"
+    dry "kwriteconfig6 --file ksplashrc --group KSplash --key Theme com.tronlegacy.desktop" && ok "Splash screen selected"
+fi
 
 maybe_backup "$WALLPAPER_DEST/TronLegacy"
 dry "rm -rf '$WALLPAPER_DEST/TronLegacy'"

@@ -133,7 +133,8 @@ Add the widget via: **Right-click Desktop → Add Widgets → Tron Container Mon
 ### Look and Feel (`look-and-feel/`)
 
 - `contents/defaults` — maps components to theme names (color scheme, plasma style, kwin theme, wallpaper, splash, lock screen)
-- `contents/splash/Splash.qml` — animated boot splash with progress stages
+- `contents/splash/Splash.qml` — animated login splash: an identity disc made of SVG layers (`contents/splash/images/<layer>-{clu,grid}.svg`) that QML rotates at different speeds (QtSvg can't play SMIL). Colours cross-fade from CLU orange (login screen) to grid cyan (desktop) with the KSplash `stage` (0…6). Keep both palette sets of each layer structurally identical
+- Test the splash without logging out: `ksplashqml --test --window com.tronlegacy.desktop`
 - `contents/lockscreen/LockScreen.qml` — lock screen UI
 
 ### Icon Theme (`icons/`)
