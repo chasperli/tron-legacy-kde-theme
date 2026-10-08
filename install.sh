@@ -14,6 +14,7 @@ COLOR_DEST="${HOME:?}/.local/share/color-schemes"
 PLASMA_DEST="${HOME}/.local/share/plasma/desktoptheme"
 AURORAE_DEST="${HOME}/.local/share/aurorae/themes"
 LAF_DEST="${HOME}/.local/share/plasma/look-and-feel"
+SHELL_DEST="${HOME}/.local/share/plasma/shells"
 WALLPAPER_DEST="${HOME}/.local/share/wallpapers"
 KONSOLE_DEST="${HOME}/.local/share/konsole"
 KATE_DEST="${HOME}/.local/share/org.kde.syntax-highlighting/themes"
@@ -187,6 +188,7 @@ if $UNINSTALL; then
         "$PLASMA_DEST/TronLegacy" \
         "$AURORAE_DEST/TronLegacy" \
         "$LAF_DEST/com.tronlegacy.desktop" \
+        "$SHELL_DEST/com.tronlegacy.lockscreen" \
         "$WALLPAPER_DEST/TronLegacy" \
         "$KONSOLE_DEST/TronLegacy.colorscheme" \
         "$GTK_DEST/TronLegacy" \
@@ -196,6 +198,12 @@ if $UNINSTALL; then
             dry "rm -rf '$target'" && ok "Removed $target" || true
         fi
     done
+
+    # Hand the lock screen back to Plasma's default
+    if command -v kreadconfig6 &>/dev/null && command -v kwriteconfig6 &>/dev/null \
+        && [[ "$(kreadconfig6 --file kscreenlockerrc --group Greeter --key Theme)" == com.tronlegacy.* ]]; then
+        dry "kwriteconfig6 --file kscreenlockerrc --group Greeter --key Theme --delete" && ok "Lock screen reset to default"
+    fi
 
     if ! $SKIP_SDDM; then
         echo ""
@@ -313,6 +321,22 @@ if command -v kreadconfig6 &>/dev/null && command -v kwriteconfig6 &>/dev/null \
     && [[ "$(kreadconfig6 --file kdeglobals --group KDE --key LookAndFeelPackage)" == "com.tronlegacy.desktop" ]]; then
     dry "kwriteconfig6 --file ksplashrc --group KSplash --key Engine KSplashQML"
     dry "kwriteconfig6 --file ksplashrc --group KSplash --key Theme com.tronlegacy.desktop" && ok "Splash screen selected"
+fi
+
+# Lock screen + screensaver. Plasma 6 loads the lock screen from a Plasma/Shell
+# package (not the global theme); kscreenlockerrc [Greeter] Theme selects it.
+# The identity-disc layers are shared with the splash and copied in here.
+maybe_backup "$SHELL_DEST/com.tronlegacy.lockscreen"
+dry "mkdir -p '$SHELL_DEST'"
+dry "rm -rf '$SHELL_DEST/com.tronlegacy.lockscreen'"
+dry "cp -r '$SCRIPT_DIR/lockscreen/com.tronlegacy.lockscreen' '$SHELL_DEST/'"
+dry "mkdir -p '$SHELL_DEST/com.tronlegacy.lockscreen/contents/lockscreen/images'"
+dry "cp '$SCRIPT_DIR/look-and-feel/com.tronlegacy.desktop/contents/splash/images/'*-clu.svg '$SHELL_DEST/com.tronlegacy.lockscreen/contents/lockscreen/images/'" \
+    && ok "Lock screen"
+if command -v kwriteconfig6 &>/dev/null; then
+    dry "kwriteconfig6 --file kscreenlockerrc --group Greeter --key Theme com.tronlegacy.lockscreen" && ok "Lock screen selected"
+else
+    warn "kwriteconfig6 not found — select the lock screen manually (see README)"
 fi
 
 maybe_backup "$WALLPAPER_DEST/TronLegacy"

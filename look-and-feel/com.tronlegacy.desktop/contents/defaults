@@ -15,10 +15,10 @@ library=org.kde.kwin.aurorae
 theme=__aurorae__svg__TronLegacy
 
 [ksplashrc][KSplash]
-Theme=com.tronlegacy.desktop
+Theme=com.tronlegacy.lockscreen
 
 [kscreenlockerrc][Greeter]
-Theme=com.tronlegacy.desktop
+Theme=com.tronlegacy.lockscreen
 
 [Wallpaper]
 Image=TronLegacy

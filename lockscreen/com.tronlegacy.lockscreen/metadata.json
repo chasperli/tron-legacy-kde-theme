@@ -1,0 +1,18 @@
+{
+    "KPackageStructure": "Plasma/Shell",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Email": "lukas.mathis@ikmail.ch",
+                "Name": "Lukas"
+            }
+        ],
+        "Description": "Tron Legacy lock screen with identity-disc screensaver",
+        "Id": "com.tronlegacy.lockscreen",
+        "License": "GPL-2.0-or-later",
+        "Name": "Tron Legacy Lock Screen",
+        "Version": "0.1.5"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0",
+    "X-Plasma-APIVersion": "2"
+}

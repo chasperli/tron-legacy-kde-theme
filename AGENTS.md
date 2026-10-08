@@ -15,7 +15,8 @@ The project also includes a custom Plasma 6 widget (`Tron Container Monitor`) th
 | `color-scheme/TronLegacy.colors` | KDE color scheme palette definition |
 | `plasma-style/TronLegacy/` | Plasma desktop theme (SVG widgets, dialogs, panel backgrounds). Includes `opaque/` and `translucent/` variants |
 | `aurorae/TronLegacy/` | Window decoration theme (Aurorae engine). SVG buttons + `TronLegacy.rc` config |
-| `look-and-feel/com.tronlegacy.desktop/` | Global theme package (`metadata.json`, `contents/defaults`, splash & lockscreen QML) |
+| `look-and-feel/com.tronlegacy.desktop/` | Global theme package (`metadata.json`, `contents/defaults`, splash QML) |
+| `lockscreen/com.tronlegacy.lockscreen/` | Lock screen + screensaver (`Plasma/Shell` package, installed to `~/.local/share/plasma/shells/`) |
 | `wallpaper/TronLegacy/` | Image wallpaper package (`Plasma/Wallpaper/Images`). SVG sources live in `contents/images/`; install script generates PNG fallbacks |
 | `sddm/TronLegacy/` | SDDM (login manager) theme |
 | `konsole/TronLegacy.colorscheme` | Konsole terminal color scheme |
@@ -83,7 +84,7 @@ For Flatpak support, run with the `--flatpak` flag:
 ```
 
 This script:
-1. Copies color scheme, plasma style, aurorae, look-and-feel, wallpaper, konsole scheme into `~/.local/share/…`
+1. Copies color scheme, plasma style, aurorae, look-and-feel, lock screen, wallpaper, konsole scheme into `~/.local/share/…` and selects the lock screen (`kscreenlockerrc [Greeter] Theme=com.tronlegacy.lockscreen`)
 2. Installs the SDDM theme to `/usr/share/sddm/themes` (requires `sudo`)
 3. Converts SVG wallpapers to PNG using `rsvg-convert` (falls back to `inkscape`)
 4. Copies editor themes to Vim/Neovim/VS Code paths
@@ -135,7 +136,14 @@ Add the widget via: **Right-click Desktop → Add Widgets → Tron Container Mon
 - `contents/defaults` — maps components to theme names (color scheme, plasma style, kwin theme, wallpaper, splash, lock screen)
 - `contents/splash/Splash.qml` — animated login splash: an identity disc made of SVG layers (`contents/splash/images/<layer>-{clu,grid}.svg`) that QML rotates at different speeds (QtSvg can't play SMIL). Colours cross-fade from CLU orange (login screen) to grid cyan (desktop) with the KSplash `stage` (0…6). Keep both palette sets of each layer structurally identical
 - Test the splash without logging out: `ksplashqml --test --window com.tronlegacy.desktop`
-- `contents/lockscreen/LockScreen.qml` — lock screen UI
+
+### Lock Screen / Screensaver (`lockscreen/`)
+
+- Plasma 6 loads the lock screen from a **`Plasma/Shell` package**, not from the global theme — a `lockscreen/` folder in the look-and-feel package is ignored. `kscreenlockerrc [Greeter] Theme` names the shell package; `install.sh` sets it, `--uninstall` resets it, and `contents/defaults` sets it too when the global theme is applied
+- `contents/lockscreen/LockScreen.qml` — doubles as the screensaver: while idle only the drifting identity disc + clock are shown (burn-in protection); any input fades in the password panel, 10 s of inactivity fades it out again
+- Uses the kscreenlocker greeter API: `authenticator.startAuthenticating()` / `respond(password)`, `onFailed(kind)` (`kind == 0` = password), `onSucceeded` → `Qt.quit()`; context properties `kscreenlocker_userName`, `kscreenlocker_userImage`
+- The disc layers are **not** duplicated: `install.sh` copies `look-and-feel/…/splash/images/*-clu.svg` into the installed package's `contents/lockscreen/images/`. Lock screen and SDDM use the CLU orange palette
+- Test without locking: `/usr/lib/kscreenlocker_greet --testing --shell com.tronlegacy.lockscreen`
 
 ### Icon Theme (`icons/`)
 
@@ -236,7 +244,7 @@ Keep `Version` in sync across all `metadata.json` files when releasing.
 ## Development Workflow
 
 1. **Edit SVGs** — modify assets in `plasma-style/`, `aurorae/`, or `wallpaper/`
-2. **Edit QML** — modify `Splash.qml`, `LockScreen.qml`, or `main.qml`
+2. **Edit QML** — modify `Splash.qml`, `lockscreen/…/LockScreen.qml`, or `main.qml`
 3. **Test** — run `./install.sh` to copy changes into `~/.local/share/…` and reload Plasma (`killall plasmashell && sleep 2 && plasmashell &` or simply log out/in)
 4. **For plasmoid UI changes** — after `install.sh`, remove and re-add the widget, or run `killall plasmashell && sleep 2 && plasmashell &`
 5. **For systemd timer changes** — after `install.sh`, the script runs `systemctl --user daemon-reload` and restarts the timer
