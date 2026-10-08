@@ -23,6 +23,7 @@ VSCODE_DEST="${HOME}/.vscode/extensions/tron-legacy-theme"
 PLASMOID_DEST="${HOME}/.local/share/plasma/plasmoids"
 SYSTEMD_DEST="${HOME}/.config/systemd/user"
 GTK_DEST="${HOME}/.themes"
+ICON_DEST="${HOME}/.local/share/icons"
 SDDM_DEST="/usr/share/sddm/themes"
 
 # ── Flags ────────────────────────────────────────────────────────────────────
@@ -151,6 +152,29 @@ setup_flatpak() {
     fi
 }
 
+# ── Legacy SDDM status backend ──────────────────────────────────────────────
+# Older versions installed a root timer that read network/Tailscale state
+# (via D-Bus) for the login screen. The login screen no longer shows it, so
+# make sure any leftover timer, units and cache are gone.
+remove_sddm_status_backend() {
+    command -v sudo &>/dev/null || return 0
+    if [[ -f /etc/systemd/system/tron-sddm-status.timer || -f /etc/systemd/system/tron-sddm-status.service ]]; then
+        if ! $DRY_RUN && command -v systemctl &>/dev/null; then
+            sudo systemctl disable --now tron-sddm-status.timer 2>/dev/null || true
+        fi
+        dry "sudo rm -f /etc/systemd/system/tron-sddm-status.timer /etc/systemd/system/tron-sddm-status.service"
+        if ! $DRY_RUN && command -v systemctl &>/dev/null; then
+            sudo systemctl daemon-reload 2>/dev/null || true
+        fi
+        ok "Removed legacy SDDM status timer"
+    fi
+    for cache in /tmp/sddm-status /var/cache/sddm/network-status.json; do
+        if [[ -e "$cache" ]]; then
+            dry "sudo rm -rf '$cache'" && ok "Removed $cache"
+        fi
+    done
+}
+
 # ═════════════════════════════════════════════════════════════════════════════
 #  UNINSTALL
 # ═════════════════════════════════════════════════════════════════════════════
@@ -165,7 +189,9 @@ if $UNINSTALL; then
         "$LAF_DEST/com.tronlegacy.desktop" \
         "$WALLPAPER_DEST/TronLegacy" \
         "$KONSOLE_DEST/TronLegacy.colorscheme" \
-        "$GTK_DEST/TronLegacy"; do
+        "$GTK_DEST/TronLegacy" \
+        "$ICON_DEST/TronLegacy" \
+        "$ICON_DEST/TronLegacy_cursors"; do
         if [[ -e "$target" ]]; then
             dry "rm -rf '$target'" && ok "Removed $target" || true
         fi
@@ -181,18 +207,7 @@ if $UNINSTALL; then
                 warn "sudo not found — remove manually: $SDDM_DEST/TronLegacy"
             fi
         fi
-        # Remove system-wide status timer
-        if command -v sudo &>/dev/null && command -v systemctl &>/dev/null; then
-            if systemctl list-unit-files tron-sddm-status.timer &>/dev/null; then
-                if ! $DRY_RUN; then
-                    sudo systemctl disable --now tron-sddm-status.timer 2>/dev/null || true
-                fi
-            fi
-            dry "sudo rm -f /etc/systemd/system/tron-sddm-status.timer /etc/systemd/system/tron-sddm-status.service"
-            if ! $DRY_RUN; then
-                sudo systemctl daemon-reload 2>/dev/null || true
-            fi
-        fi
+        remove_sddm_status_backend
     fi
 
     if ! $SKIP_EDITORS; then
@@ -310,6 +325,36 @@ maybe_backup "$GTK_DEST/TronLegacy"
 dry "rm -rf '$GTK_DEST/TronLegacy'"
 dry "cp -r '$SCRIPT_DIR/gtk/TronLegacy' '$GTK_DEST/'" && ok "GTK Theme (3 + 4)"
 
+# ── Icon Theme ──────────────────────────────────────────────────────────────
+echo ""
+echo "── Icon Theme ───────────────────────────────────────────────────────────"
+
+dry "mkdir -p '$ICON_DEST'"
+
+maybe_backup "$ICON_DEST/TronLegacy"
+dry "rm -rf '$ICON_DEST/TronLegacy'"
+dry "cp -r '$SCRIPT_DIR/icons/TronLegacy' '$ICON_DEST/'" && ok "Icon Theme"
+if command -v gtk-update-icon-cache &>/dev/null; then
+    dry "gtk-update-icon-cache -f -q '$ICON_DEST/TronLegacy'" && ok "GTK icon cache updated" \
+        || warn "gtk-update-icon-cache failed (GTK apps still work, just slower lookup)"
+fi
+
+# ── Cursor Theme ────────────────────────────────────────────────────────────
+echo ""
+echo "── Cursor Theme ─────────────────────────────────────────────────────────"
+
+maybe_backup "$ICON_DEST/TronLegacy_cursors"
+dry "rm -rf '$ICON_DEST/TronLegacy_cursors'"
+dry "cp -r '$SCRIPT_DIR/cursors/TronLegacy_cursors' '$ICON_DEST/'" && ok "Cursor Theme (SVG, Wayland)"
+# Xcursor binaries for X11 / XWayland apps are rendered from the SVG sources
+if command -v python3 &>/dev/null; then
+    dry "python3 '$SCRIPT_DIR/cursors/generate-cursors.py' --xcursor '$ICON_DEST/TronLegacy_cursors' >/dev/null" \
+        && ok "Xcursor files (X11 / XWayland)" \
+        || warn "Xcursor build failed (needs librsvg) — X11/XWayland apps fall back to Breeze cursors"
+else
+    warn "python3 not found — Xcursor files skipped, X11/XWayland apps fall back to Breeze cursors"
+fi
+
 # ── Flatpak overrides ───────────────────────────────────────────────────────
 if $ENABLE_FLATPAK; then
     setup_flatpak
@@ -324,30 +369,7 @@ if ! $SKIP_SDDM; then
         dry "sudo rm -rf '$SDDM_DEST/TronLegacy'"
         dry "sudo cp -r '$SCRIPT_DIR/sddm/TronLegacy' '$SDDM_DEST/'" && ok "SDDM Theme"
 
-        # Install & enable system status collector
-        if [[ -f "$SCRIPT_DIR/systemd/tron-sddm-status.service" ]] && [[ -f "$SCRIPT_DIR/systemd/tron-sddm-status.timer" ]]; then
-            dry "sudo cp '$SCRIPT_DIR/systemd/tron-sddm-status.service' /etc/systemd/system/"
-            dry "sudo cp '$SCRIPT_DIR/systemd/tron-sddm-status.timer' /etc/systemd/system/"
-            if ! $DRY_RUN; then
-                sudo systemctl daemon-reload
-                sudo systemctl enable --now tron-sddm-status.timer && ok "SDDM status timer enabled & started"
-            else
-                ok "Would enable & start tron-sddm-status.timer"
-            fi
-            if ! $DRY_RUN && [[ -f "$SDDM_DEST/TronLegacy/network-status.sh" ]]; then
-                sudo chmod +x "$SDDM_DEST/TronLegacy/network-status.sh"
-            fi
-            # Initial run so SDDM has data immediately
-            if ! $DRY_RUN; then
-                if sudo "$SDDM_DEST/TronLegacy/network-status.sh" 2>/dev/null; then
-                    ok "First SDDM status fetch"
-                else
-                    warn "Initial SDDM status fetch failed — check nmcli / tailscale availability"
-                fi
-            fi
-        else
-            warn "SDDM status service files not found — skipping system status backend"
-        fi
+        remove_sddm_status_backend
 
         echo ""
         echo "  To test the SDDM theme safely before activating it, run:"
@@ -523,6 +545,8 @@ echo "Apply the theme via: System Settings → Appearance → Global Theme → T
 echo ""
 echo "GTK / Flatpak:"
 echo "  Host GTK apps:   gsettings set org.gnome.desktop.interface gtk-theme 'TronLegacy'"
+echo "  GTK icons:       gsettings set org.gnome.desktop.interface icon-theme 'TronLegacy'"
+echo "  GTK cursor:      gsettings set org.gnome.desktop.interface cursor-theme 'TronLegacy_cursors'"
 if $ENABLE_FLATPAK; then
     echo "  Flatpak override already applied (GTK_THEME + ~/.themes access)."
     echo "  Restart Flatpak apps to pick up the theme."

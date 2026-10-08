@@ -8,5 +8,5 @@ Encoding=UTF-8
 GtkTheme=TronLegacy
 MetacityTheme=TronLegacy
 IconTheme=TronLegacy
-CursorTheme=TronLegacy
+CursorTheme=TronLegacy_cursors
 ButtonLayout=menu:minimize,maximize,close

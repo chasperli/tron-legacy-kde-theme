@@ -11,12 +11,10 @@ Rectangle {
     readonly property color colBg:        "#050A0E"
     readonly property color colPanel:     "#160A06"
     readonly property color colPrimary:   "#FF5A00"
-    readonly property color colPrimaryLt: "#FF9500"
     readonly property color colDim:       "#582000"
     readonly property color colText:      "#F0C080"
     readonly property color colTextDim:   "#805040"
     readonly property color colError:     "#FF3030"
-    readonly property color colOkay:      "#00F5B4"
 
     /* ── Wallpaper fallback ── */
     Image {
@@ -244,110 +242,6 @@ Rectangle {
         }
     }
 
-    /* ── Network / Tailscale Status Panel ── */
-    Rectangle {
-        id: statusPanel
-        anchors.top: loginPanel.bottom
-        anchors.topMargin: 24
-        anchors.horizontalCenter: parent.horizontalCenter
-        width: loginPanel.width
-        height: statusCol.implicitHeight + 24
-        radius: 4
-        color: "#0A0A0E"
-        border.color: root.colDim; border.width: 1
-        opacity: 0.92
-
-        Rectangle {
-            anchors.top: parent.top; anchors.horizontalCenter: parent.horizontalCenter
-            width: parent.width * 0.8; height: 1; color: root.colPrimary; opacity: 0.5
-        }
-
-        Column {
-            id: statusCol
-            anchors.centerIn: parent
-            width: parent.width - 32
-            spacing: 10
-
-            /* Header */
-            Text {
-                anchors.horizontalCenter: parent.horizontalCenter
-                text: "SYSTEM STATUS"
-                font.family: "monospace"; font.pixelSize: 10
-                font.letterSpacing: 4; color: root.colTextDim
-            }
-
-            Rectangle { anchors.horizontalCenter: parent.horizontalCenter; width: parent.width; height: 1; color: root.colDim }
-
-            /* WiFi */
-            Row {
-                anchors.horizontalCenter: parent.horizontalCenter
-                spacing: 8
-                Text { text: "WLAN"; font.family: "monospace"; font.pixelSize: 11; font.letterSpacing: 2; color: root.colTextDim }
-                Text {
-                    id: wifiText
-                    font.family: "monospace"; font.pixelSize: 11; font.letterSpacing: 1
-                    color: text.length > 0 && text !== "NOT CONNECTED" ? root.colPrimaryLt : root.colTextDim
-                    text: "--"
-                }
-            }
-
-            /* LAN */
-            Row {
-                anchors.horizontalCenter: parent.horizontalCenter
-                spacing: 8
-                Text { text: "LAN "; font.family: "monospace"; font.pixelSize: 11; font.letterSpacing: 2; color: root.colTextDim }
-                Text {
-                    id: lanText
-                    font.family: "monospace"; font.pixelSize: 11; font.letterSpacing: 1
-                    color: text.length > 0 && text !== "NOT CONNECTED" ? root.colPrimaryLt : root.colTextDim
-                    text: "--"
-                }
-            }
-
-            /* Tailscale */
-            Row {
-                anchors.horizontalCenter: parent.horizontalCenter
-                spacing: 8
-                Text { text: "TAILSCALE"; font.family: "monospace"; font.pixelSize: 11; font.letterSpacing: 2; color: root.colTextDim }
-                Text {
-                    id: tsStatusText
-                    font.family: "monospace"; font.pixelSize: 11; font.letterSpacing: 1
-                    color: root.colTextDim
-                    text: "--"
-                }
-            }
-
-            Text {
-                id: tsMachinesText
-                anchors.horizontalCenter: parent.horizontalCenter
-                width: parent.width; horizontalAlignment: Text.AlignHCenter
-                wrapMode: Text.Wrap
-                font.family: "monospace"; font.pixelSize: 10; font.letterSpacing: 1
-                color: root.colTextDim
-                visible: text.length > 0
-            }
-
-            /* Error from backend */
-            Text {
-                id: backendErrorText
-                anchors.horizontalCenter: parent.horizontalCenter
-                width: parent.width; horizontalAlignment: Text.AlignHCenter
-                wrapMode: Text.Wrap
-                font.family: "monospace"; font.pixelSize: 9; font.letterSpacing: 1
-                color: root.colError
-                visible: text.length > 0
-            }
-        }
-
-        Timer {
-            interval: 5000
-            running: true
-            repeat: true
-            triggerOnStart: true
-            onTriggered: root.loadStatus()
-        }
-    }
-
     /* ── Power buttons ── */
     Row {
         anchors.horizontalCenter: parent.horizontalCenter
@@ -381,42 +275,6 @@ Rectangle {
                 }
             }
         }
-    }
-
-    /* ── Data fetcher ── */
-    function loadStatus() {
-        var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === XMLHttpRequest.DONE) {
-                if (xhr.status === 0 || xhr.status === 200) {
-                    try {
-                        var d = JSON.parse(xhr.responseText);
-
-                        wifiText.text  = d.wlan_name  ? d.wlan_name  : "NOT CONNECTED";
-                        lanText.text   = d.lan_name   ? d.lan_name   : "NOT CONNECTED";
-
-                        if (d.tailscale_online === true || d.tailscale_online === "true") {
-                            var peers = (d.tailscale_peers !== undefined) ? d.tailscale_peers : 0;
-                            tsStatusText.text = "ONLINE — " + peers + " PEERS";
-                            tsStatusText.color = root.colOkay;
-                            tsMachinesText.text = d.tailscale_machines || "";
-                        } else {
-                            tsStatusText.text = "OFFLINE";
-                            tsStatusText.color = root.colTextDim;
-                            tsMachinesText.text = "";
-                        }
-
-                        backendErrorText.text = d.error || "";
-                    } catch (e) {
-                        backendErrorText.text = "PARSE ERROR";
-                    }
-                } else {
-                    backendErrorText.text = "STATUS UNAVAILABLE";
-                }
-            }
-        };
-        xhr.open("GET", "file:///var/cache/sddm/network-status.json");
-        xhr.send();
     }
 
     function tryLogin() {

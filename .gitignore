@@ -2,6 +2,7 @@
 # These are produced by install.sh from SVG sources
 wallpaper/TronLegacy/contents/images/*.png
 sddm/TronLegacy/tron-legacy-wallpaper.png
+cursors/TronLegacy_cursors/cursors/
 
 # OS / editor debris
 .DS_Store

@@ -1,16 +1,23 @@
-[kdeglobals]
+[kdeglobals][General]
 ColorScheme=TronLegacy
 
-[plasmarc]
+[kdeglobals][Icons]
 Theme=TronLegacy
 
-[kwinrc]
+[kcminputrc][Mouse]
+cursorTheme=TronLegacy_cursors
+
+[plasmarc][Theme]
+name=TronLegacy
+
+[kwinrc][org.kde.kdecoration2]
+library=org.kde.kwin.aurorae
 theme=__aurorae__svg__TronLegacy
 
-[ksplashrc]
+[ksplashrc][KSplash]
 Theme=com.tronlegacy.desktop
 
-[kscreenlockerrc]
+[kscreenlockerrc][Greeter]
 Theme=com.tronlegacy.desktop
 
 [Wallpaper]
