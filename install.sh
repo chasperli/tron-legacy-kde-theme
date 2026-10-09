@@ -369,6 +369,12 @@ if command -v gtk-update-icon-cache &>/dev/null; then
     dry "gtk-update-icon-cache -f -q '$ICON_DEST/TronLegacy'" && ok "GTK icon cache updated" \
         || warn "gtk-update-icon-cache failed (GTK apps still work, just slower lookup)"
 fi
+# KDE apps keep rendered icons in a shared cache and would keep showing the
+# old ones; it is rebuilt on demand.
+KDE_ICON_CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/icon-cache.kcache"
+if [[ -e "$KDE_ICON_CACHE" ]]; then
+    dry "rm -f '$KDE_ICON_CACHE'" && ok "KDE icon cache cleared"
+fi
 
 # ── Cursor Theme ────────────────────────────────────────────────────────────
 echo ""

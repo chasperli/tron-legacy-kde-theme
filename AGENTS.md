@@ -151,6 +151,8 @@ Add the widget via: **Right-click Desktop → Add Widgets → Tron Container Mon
 - `generate-icons.py` — single source of truth. Draws every icon on a 64×64 grid from shared primitives (folder, page, window shapes + emblems) and writes all aliases (e.g. `utilities-terminal` = `org.kde.konsole`). Run `python3 icons/generate-icons.py` after editing and commit the regenerated SVGs
 - QtSvg has no filter support, so the neon glow is a wide translucent stroke under the main stroke — never use `<filter>`
 - Only full-colour icons are themed; symbolic/action icons (toolbars, tray) come from Breeze Dark
+- **File-type icons:** every concrete format uses the same page icon with the extension written on it (`TYPED` list → `typed(category, *rows)`). Letters are stroke paths from the built-in `GLYPHS` font (4×6 grid), never `<text>`, so they don't depend on installed fonts; add missing characters to `GLYPHS`. Labels: max. 4 characters per row, max. 2 rows (e.g. `TAR`/`GZ`). The category (doc, sheet, slides, pdf, archive, code, config, image, video, audio) sets the colour, the small mark top left and the bottom band. **Code** (SH, PY, JS, C, …) is drawn entirely in the CLU palette (`#FF5A00` edge, `#1E0A0A` page); **config**/markup files (HTML, XML, CSS, JSON, YAML, TOML) are green Generic fallbacks (`x-office-document`, `package-x-generic`, `image-x-generic` …) keep a large pictogram
+- Icon names = MIME type with `/` → `-` (check `/usr/share/mime/packages/freedesktop.org.xml`). `install.sh` clears `~/.cache/icon-cache.kcache`, otherwise KDE apps keep showing old icons
 - Selected by the global theme via `[kdeglobals][Icons]` in `look-and-feel/…/contents/defaults`
 
 ### Cursor Theme (`cursors/`)
