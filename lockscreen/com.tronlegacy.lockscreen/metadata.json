@@ -11,7 +11,7 @@
         "Id": "com.tronlegacy.lockscreen",
         "License": "GPL-2.0-or-later",
         "Name": "Tron Legacy Lock Screen",
-        "Version": "0.1.6"
+        "Version": "0.1.7"
     },
     "X-Plasma-API-Minimum-Version": "6.0",
     "X-Plasma-APIVersion": "2"

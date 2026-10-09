@@ -7,7 +7,7 @@ set -euo pipefail
 
 # ── Version & Paths ─────────────────────────────────────────────────────────
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-VERSION="0.1.6"
+VERSION="0.1.7"
 
 # ── Destinations ──────────────────────────────────────────────────────────────
 COLOR_DEST="${HOME:?}/.local/share/color-schemes"
