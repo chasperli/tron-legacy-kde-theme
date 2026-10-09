@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.7] - 2026-10-09
+
+### Added
+- Labelled file-type icons: every concrete format shares one page icon with its extension written on it (DOCX, XLSX, PPTX, ODS, MD, ZIP, TAR/GZ, PY, JSON, PNG, …). Category colours: documents cyan, PDF red, spreadsheets and config/markup green, presentations orange, archives light orange, source code in the CLU palette.
+- Generic office icons (`x-office-document`, `x-office-spreadsheet`, `x-office-presentation`).
+
+### Fixed
+- New icons did not show up in KDE apps until the icon cache expired; `install.sh` now clears `~/.cache/icon-cache.kcache`.
+
 ## [0.1.6] - 2026-10-08
 
 ### Added

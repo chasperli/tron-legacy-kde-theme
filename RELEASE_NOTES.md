@@ -1,8 +1,20 @@
-# Tron Legacy KDE Theme — Release v0.1.6
+# Tron Legacy KDE Theme — Release v0.1.7
 
 > A dark, neon-cyan global theme for KDE Plasma 6 inspired by the visual aesthetic of *Tron: Legacy*.
 
 ---
+
+## What's New in 0.1.7
+
+- **File-type icons with labels** — Every file format now gets the same Tron page icon with its extension written on it, so `.docx`, `.xlsx`, `.pptx`, `.ods`, `.md`, `.zip`, `.tar.gz` and many more are recognisable at a glance. The colour shows the category:
+  - Documents — cyan (DOCX, DOC, ODT, RTF, MD, TXT, TEX, EPUB, LOG), PDF — red
+  - Spreadsheets — green (XLSX, XLS, ODS, CSV)
+  - Presentations — orange (PPTX, PPT, ODP)
+  - Archives & packages — light orange (ZIP, TAR, TAR.GZ/XZ/ZST/BZ2, 7Z, RAR, DEB, RPM, ISO, …)
+  - Source code — drawn entirely in CLU orange-red (SH, PY, JS, C, C++, RS, GO, JAVA, LUA, PHP, SQL, …)
+  - Markup & config — green (HTML, XML, CSS, JSON, YAML, TOML)
+  - Images, video and audio — labelled by format (PNG, JPG, SVG, MP4, MKV, MP3, FLAC, …)
+- **Icon cache fix** — `install.sh` clears KDE's icon cache, so updated icons appear right away (restart Dolphin once).
 
 ## What's New in 0.1.6
 
@@ -23,7 +35,7 @@
 - **Window Decorations** — Aurorae theme with glow-accented title bar
 - **Splash Screen** — Animated identity disc
 - **Lock Screen** — Tron-style lock screen that doubles as a screensaver
-- **Icons & Cursors** — Matching neon icon and cursor themes
+- **Icons & Cursors** — Matching neon icon theme with labelled file-type icons, and a cursor theme
 - **Wallpapers** — SVG-based wallpapers, auto-converted to PNG during installation
 - **SDDM Theme** — Login-manager theme
 - **GTK 3 / GTK 4** — Theme for GTK and Libadwaita apps, optional Flatpak support (`--flatpak`)
@@ -42,9 +54,9 @@ Then choose **System Settings → Appearance → Global Theme → Tron Legacy**.
 
 Requires: KDE Plasma 6, bash, `rsvg-convert` (librsvg) or Inkscape, sudo (SDDM theme), podman (Container Monitor), tailscale (Tailscale Monitor).
 
-### Upgrading from 0.1.5 or earlier
+### Upgrading
 
-Simply run `./install.sh` again. It replaces the installed files, selects the new lock screen and removes the old SDDM status timer.
+Simply run `./install.sh` again. It replaces the installed files, clears the icon cache, selects the new lock screen and (coming from 0.1.5 or earlier) removes the old SDDM status timer.
 
 ## Disclaimer
 
